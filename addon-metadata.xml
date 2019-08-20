@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PropertyList>
+  <meta>
+    <file-type type="string">FlightGear add-on metadata</file-type>
+    <format-version type="int">1</format-version>
+  </meta>
+
+  <addon>
+    <identifier type="string">com.github.renanmsv.rampmarshall</identifier>
+    <name type="string">Ramp Marshall</name>
+    <version type="string">0.0.1</version>
+
+    <authors>
+      <author>
+        <name type="string">omega95</name>
+        <email type="string"></email>
+        <url type="string"></url>
+      </author>      
+      <author>
+        <name type="string">merspieler</name>
+        <email type="string"></email>
+        <url type="string"></url>
+      </author>
+      <author>
+        <name type="string">RenanMsV</name>
+        <email type="string"></email>
+        <url type="string"></url>
+      </author>
+    </authors>
+
+    <maintainers>
+      <maintainer>
+        <name type="string">FlightGear developers</name>
+        <url type="string">
+          https://sourceforge.net/p/flightgear/mailman/flightgear-devel/
+        </url>
+      </maintainer>
+    </maintainers>
+
+    <short-description type="string">
+      A marshaller that guides you into your gate.
+    </short-description>
+
+    <long-description type="string">
+      A marshaller that guides you into your gate.
+    </long-description>
+
+    <license>
+      <designation type="string">
+        GNU GPL version 2 or later
+      </designation>
+
+      <file type="string">
+        <!-- Use a relative, slash-separated path to a file under the add-on
+             base directory that contains the add-on license text. -->
+      </file>
+
+      <url type="string">
+        https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+      </url>
+    </license>
+
+    <min-FG-version type="string">2019.1.1</min-FG-version>
+    <max-FG-version type="string">none</max-FG-version>
+
+    <urls>
+      <home-page type="string">
+        https://github.com/RenanMsV/ramp-marshall
+      </home-page>
+
+      <download type="string">
+        https://github.com/RenanMsV/ramp-marshall/releases
+      </download>
+
+      <support type="string">
+        https://github.com/RenanMsV/ramp-marshall/issues
+      </support>
+
+      <code-repository type="string">
+        https://github.com/RenanMsV/ramp-marshall
+      </code-repository>
+    </urls>
+
+    <tags>
+      <tag type="string">ramp</tag>
+      <tag type="string">marshall</tag>
+      <tag type="string">ground services</tag>
+    </tags>
+  </addon>
+</PropertyList>
