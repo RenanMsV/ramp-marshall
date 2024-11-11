@@ -16,7 +16,7 @@
             <label>Ramp Marshall</label>
             <enabled type="bool">true</enabled>
             <item>
-                <label>Add New Ramp Marshall</label>
+                <label>Add or Edit Ramp Marshall</label>
                 <binding>
                     <command>dialog-show</command>
                     <dialog-name>add-ramp-marshall</dialog-name>

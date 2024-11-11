@@ -689,18 +689,3 @@ var main = func(addon) {
         main_loop.init();
     });
 }
-
-# On-screen displays
-var enableOSD = func {
-	var left  = screen.display.new(20, 10);
-	var right = screen.display.new(-300, 10);
-
-	right.add("/airports/active-ramp");
-	right.add("/airports/enable-ramp");
-	#left.add("/cover");
-	#left.add("/typesF");
-	#left.add("/coverF");
-
-	#right.add("/retardent-weight");
-};
-enableOSD();
