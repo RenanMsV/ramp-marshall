@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- this file requires FlightGear version 2018.2 or newer -->
+
+<PropertyList>
+	<name>add-ramp-marshall</name>
+	<layout>vbox</layout>
+
+	<group>
+		<layout>hbox</layout>
+		<empty>
+			<stretch>1</stretch>
+		</empty>
+		<text>
+			<label>Add/Edit Ramp Marshall</label>
+		</text>
+		<empty>
+			<stretch>1</stretch>
+		</empty>
+		<button>
+			<pref-width>16</pref-width>
+			<pref-height>16</pref-height>
+			<legend></legend>
+			<keynum>27</keynum>
+			<border>2</border>
+			<binding>
+				<command>dialog-close</command>
+			</binding>
+		</button>
+	</group>
+	<hrule />
+
+	<nasal>
+		<open>
+			clicklistener = setlistener("/sim/signals/click", func {
+				if (__kbd.shift.getBoolValue()) {
+					var rampPos = geo.click_position();
+					if (__kbd.ctrl.getBoolValue()) {
+						#var name = getprop("/sim/time/utc/day-seconds");
+						var posparams = split(".", sprintf("%.16f", rampPos.lat()));
+						var hdg = getprop("/orientation/heading-deg")-180;
+						var model = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/path") ~ "/Models/Airport/Ramp/ramp.xml";
+						save_marshall_pos(rampPos, hdg)
+					}
+				}
+			});
+			
+			var icao = props.globals.getNode("/sim/airport/closest-airport-id");
+			var ramps = props.globals.getNode("/airports/"~icao.getValue()~"/ramps", 1).getChildren("ramp");
+			foreach(var rampN; ramps) {
+				var index = rampN.getIndex(); 	
+				setprop("/"~icao.getValue()~"/ramp["~index~"]/latitude-deg", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/latitude-deg"));
+				setprop("/"~icao.getValue()~"/ramp["~index~"]/longitude-deg", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/longitude-deg"));
+				setprop("/"~icao.getValue()~"/ramp["~index~"]/altitude-m", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/altitude-m"));
+				setprop("/"~icao.getValue()~"/ramp["~index~"]/heading-deg", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/heading-deg"));
+			}
+
+			var save_marshall_pos = func(rampPos, hdg)
+			{
+				var icao = props.globals.getNode("/sim/airport/closest-airport-id");
+				if (icao.getValue() == nil or icao.getValue() == "") {
+					print("Airport code cannot be obtained.");
+					return nil;
+				}
+
+				var filename = getprop("/sim/fg-home") ~ "/Export/Addons/org.flightgear.addons.rampmarshall/AI/Airports/" ~ icao.getValue() ~ "/ramps.xml";
+				var rampsTree = "/airports/"~icao.getValue()~"/ramps";
+
+				readFile = io.read_properties(filename, icao.getValue());
+				var manager = props.globals.getNode("/"~icao.getValue(), 1);					
+				var i = 0;
+				for (; 1; i += 1) {
+					if (manager.getChild("ramp", i, 0) == nil) {
+						break;
+					}
+				}
+				setprop(icao.getValue() ~ "/ramp["~i~"]/latitude-deg", rampPos.lat());
+				setprop(icao.getValue() ~ "/ramp["~i~"]/longitude-deg", rampPos.lon());
+				setprop(icao.getValue() ~ "/ramp["~i~"]/altitude-m", rampPos.alt());
+				setprop(icao.getValue() ~ "/ramp["~i~"]/heading-deg", hdg);
+
+				io.write_properties(filename, icao.getValue());
+				print("New RampMarshall location saved");
+				setprop(rampsTree~"/loaded", 0); # Reset Loaded flag so flightgear loads the new ramp
+
+			};
+			
+			var save_edited_marshall_pos = func()
+			{
+				var icao = props.globals.getNode("/sim/airport/closest-airport-id");
+				if (icao.getValue() == nil or icao.getValue() == "") {
+					print("Airport code cannot be obtained.");
+					return nil;
+				}
+				var filename = getprop("/sim/fg-home") ~ "/Export/Addons/org.flightgear.addons.rampmarshall/AI/Airports/" ~ icao.getValue() ~ "/ramps.xml";
+				var rampsTree = "/airports/"~icao.getValue()~"/ramps";
+				io.write_properties(filename, icao.getValue());
+				print("Edited RampMarshall location saved");
+				setprop(rampsTree~"/loaded", 0); # Reset Loaded flag so flightgear loads the new ramp
+			};
+
+			# Main Loop
+			var main_loop =
+			{
+				init : func
+				{
+					me.UPDATE_INTERVAL = 0.01;
+					me.loopTimer = maketimer(me.UPDATE_INTERVAL, func(){
+						if (getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos-temp") != 0)
+							me.update();
+					});		
+					me.loopTimer.start();
+				},
+				update : func
+				{
+					var ramps = props.globals.getNode("/models", 1).getChildren("model");
+					var activeRamp = props.globals.getNode("/airports/active-ramp"); 
+					var icao = props.globals.getNode("/sim/airport/closest-airport-id");
+					foreach(var rampN; ramps) {
+						var path = rampN.getNode("path").getValue();
+						if ((substr(path, -10, 4) == "ramp" and substr(path, -5, 1) == activeRamp.getValue()) or (substr(path, -11, 4) == "ramp" and substr(path, -6, 2) == activeRamp.getValue())) {
+							rampN.getNode("latitude-deg").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos"));
+							rampN.getNode("longitude-deg").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos"));	
+							rampN.getNode("elevation-ft").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos"));									
+							rampN.getNode("heading-deg").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading"));
+							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/latitude-deg", rampN.getNode("latitude-deg").getValue());
+							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/longitude-deg", rampN.getNode("longitude-deg").getValue());
+							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/altitude-m", rampN.getNode("elevation-ft").getValue()*FT2M);
+							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/heading-deg", rampN.getNode("heading-deg").getValue());
+							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/latitude-deg", rampN.getNode("latitude-deg").getValue());
+							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/longitude-deg", rampN.getNode("longitude-deg").getValue());
+							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/altitude-m", rampN.getNode("elevation-ft").getValue()*FT2M);
+							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/heading-deg", rampN.getNode("heading-deg").getValue());
+						}
+					}
+				},
+			};
+			main_loop.init();		
+		</open>
+		<close>
+			removelistener(clicklistener);
+		</close>
+	</nasal>
+	
+	<group>
+		<layout>vbox</layout>
+		<default-padding>10</default-padding>
+		<group>
+			<layout>vbox</layout>
+			<text>
+				<label>To add a new Ramp Marshall</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    1) Use [shift+ctrl] and mouse left click</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       at the location you want to place the Marshall.</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    2) Use the sliders to fine tune the</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       location and orientation of the Marshall.</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    3) Click on the "Save Current Edit" button</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       to save the new Marshall.</label>
+			</text>
+		</group>
+	</group>
+	
+	<hrule />
+
+	<group>
+		<layout>vbox</layout>
+		<default-padding>10</default-padding>
+		<group>
+			<layout>vbox</layout>
+			<text>
+				<label>To edit an existing Ramp Marshall</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    1) Left click on the Marshall you want to edit.</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    2) Use the sliders to fine tune the</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       location and orientation of the Marshall.</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    3) Click on the "Save Current Edit" button</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       to save the edited Marshall.</label>
+			</text>
+		</group>
+	</group>
+	
+	<hrule />
+
+	<group>
+		<layout>hbox</layout>
+		<text>
+			<label>Marshall's Position</label>
+		</text>
+	</group>
+	<group>
+		<layout>hbox</layout>
+		<halign>center</halign>
+
+		<group>
+			<layout>vbox</layout>
+			<halign>right</halign>
+			<text>
+				<halign>left</halign>
+				<label>x-pos</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>y-pos</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>z-pos</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>heading</label>
+			</text>
+		</group>
+
+		<group>
+			<layout>vbox</layout>
+			<slider>
+				<name>marshall-x-pos</name>
+				<min>-0.0010</min>
+				<max> 0.0010</max>
+				<step> 0.00001</step>
+				<fraction>0.00001</fraction>
+				<live>true</live>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos</property>
+				<binding>
+					<command>dialog-apply</command>
+					<object-name>marshall-x-pos</object-name>
+				</binding>
+			</slider>
+			<slider>
+				<name>marshall-y-pos</name>
+				<min>-0.0010</min>
+				<max> 0.0010</max>
+				<step> 0.00001</step>
+				<fraction>0.00001</fraction>
+				<live>true</live>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos</property>
+				<binding>
+					<command>dialog-apply</command>
+					<object-name>marshall-y-pos</object-name>
+				</binding>
+			</slider>
+			<slider>
+				<name>marshall-z-pos</name>
+				<min>-0.0010</min>
+				<max> 0.0010</max>
+				<step> 0.000001</step>
+				<fraction>0.000001</fraction>
+				<live>true</live>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos</property>
+				<binding>
+					<command>dialog-apply</command>
+					<object-name>marshall-z-pos</object-name>
+				</binding>
+			</slider>
+			<slider>
+				<name>marshall-heading</name>
+				<min>0</min>
+				<max>360</max>
+				<step>.000001</step>
+				<fraction>0</fraction>
+				<live>true</live>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading</property>
+				<binding>
+					<command>dialog-apply</command>
+					<object-name>marshall-heading</object-name>
+				</binding>
+			</slider>
+		</group>
+		
+		<group>
+			<layout>vbox</layout>
+			<text>
+				<halign>left</halign>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos</property>
+				<format>%.03f</format>
+				<live>true</live>
+				<color>
+					<red>0.9</red>
+					<green>1</green>
+					<blue>0.2</blue>
+					<alpha>1</alpha>
+				</color>
+			</text>
+			<text>
+				<halign>left</halign>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos</property>
+				<format>%.03f</format>
+				<live>true</live>
+				<color>
+					<red>0.9</red>
+					<green>1</green>
+					<blue>0.2</blue>
+					<alpha>1</alpha>
+				</color>
+			</text>
+			<text>
+				<halign>left</halign>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos</property>
+				<format>%.03f</format>
+				<live>true</live>
+				<color>
+					<red>0.9</red>
+					<green>1</green>
+					<blue>0.2</blue>
+					<alpha>1</alpha>
+				</color>
+			</text>
+			<text>
+				<halign>left</halign>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading</property>
+				<format>%.03f</format>
+				<live>true</live>
+				<color>
+					<red>0.9</red>
+					<green>1</green>
+					<blue>0.2</blue>
+					<alpha>1</alpha>
+				</color>
+			</text>
+		</group>
+		<group>
+			<layout>vbox</layout>
+			<padding>25</padding>
+		</group>
+	</group>
+		
+	<hrule />
+		
+	<group>
+		<layout>hbox</layout>
+		<text>
+			<label>Aircrafts Front Gear X Position</label>
+		</text>
+	</group>
+	<group>
+		<layout>hbox</layout>
+		<halign>center</halign>
+
+		<group>
+			<layout>vbox</layout>
+			<halign>right</halign>
+			<text>
+				<halign>left</halign>
+				<label>x-pos</label>
+			</text>
+		</group>
+		<group>
+			<layout>vbox</layout>
+			<slider>
+				<name>aircraft-x-pos</name>
+				<min>-25.0</min>
+				<max> 25.0</max>
+				<step> 0.001</step>
+				<fraction>0.001</fraction>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos</property>
+				<binding>
+					<command>dialog-apply</command>
+					<object-name>aircraft-x-pos</object-name>
+				</binding>
+			</slider>
+		</group>
+		<group>
+			<layout>vbox</layout>
+			<text>
+				<halign>left</halign>
+				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos</property>
+				<format>%.03f</format>
+				<live>true</live>
+				<color>
+					<red>0.9</red>
+					<green>1</green>
+					<blue>0.2</blue>
+					<alpha>1</alpha>
+				</color>
+			</text>
+		</group>
+		<group>
+			<layout>vbox</layout>
+			<padding>25</padding>
+		</group>
+	</group>
+	<hrule />
+	<button>
+		<legend>Save Current Edit</legend>
+		<binding>
+			<command>nasal</command>
+			<script>
+				save_edited_marshall_pos();
+			</script>
+		</binding>
+	</button>		
+	<button>
+		<legend>Close Dialog</legend>
+		<binding>
+			<command>dialog-close</command>
+		</binding>
+	</button>
+</PropertyList>

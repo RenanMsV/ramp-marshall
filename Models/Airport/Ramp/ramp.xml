@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<PropertyList>
+
+	<path>ramp.ac</path>
+	
+	<animation>
+		<object-name>left-arm</object-name>
+		<type>rotate</type>
+		<property alias="../../params/left-arm-z" />
+		<center>
+			<x-m>20</x-m>
+			<y-m>-0.1680</y-m>
+			<z-m>1.4284</z-m>
+		</center>
+		<axis>
+			<z>1</z>
+		</axis>
+	</animation>
+	
+	<animation>
+		<object-name>right-arm</object-name>
+		<type>rotate</type>
+		<property alias="../../params/right-arm-z" />
+		<center>
+			<x-m>20</x-m>
+			<y-m>0.1680</y-m>
+			<z-m>1.4284</z-m>
+		</center>
+		<axis>
+			<z>1</z>
+		</axis>
+	</animation>
+	
+	<animation>
+		<object-name>left-arm</object-name>
+		<type>rotate</type>
+		<property alias="../../params/left-arm-x" />
+		<center>
+			<x-m>0</x-m>
+			<y-m>-0.1680</y-m>
+			<z-m>1.4284</z-m>
+		</center>
+		<axis>
+			<x>1</x>
+		</axis>
+	</animation>
+	
+	<animation>
+		<object-name>right-arm</object-name>
+		<type>rotate</type>
+		<property alias="../../params/right-arm-x" />
+		<center>
+			<x-m>0</x-m>
+			<y-m>0.1680</y-m>
+			<z-m>1.4284</z-m>
+		</center>
+		<axis>
+			<x>1</x>
+		</axis>
+	</animation>
+	
+	<animation>
+		<object-name>left-arm-outer</object-name>
+		<type>rotate</type>
+		<property alias="../../params/left-arm-outer-x" />
+		<center>
+			<x-m>0</x-m>
+			<y-m>-0.45</y-m>
+			<z-m>1.43</z-m>
+		</center>
+		<axis>
+			<x>1</x>
+		</axis>
+	</animation>
+	
+	<animation>
+		<object-name>right-arm-outer</object-name>
+		<type>rotate</type>
+		<property alias="../../params/right-arm-outer-x" />
+		<center>
+			<x-m>0</x-m>
+			<y-m>0.45</y-m>
+			<z-m>1.43</z-m>
+		</center>
+		<axis>
+			<x>1</x>
+		</axis>
+	</animation>
+	
+	<animation>
+		<type>pick</type>
+		<object-name>waldo</object-name>
+		<action>
+			<button>0</button>
+			<repeatable>false</repeatable>
+			<binding>
+				<command>nasal</command>
+				<script alias="../../../../params/toggle-ramp-marshall-script"/>
+			</binding>
+			<binding>
+				<command>nasal</command>
+				<script>
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading", 0);
+					var ramps = props.globals.getNode("/models", 1).getChildren("model");
+					var activeRamp = props.globals.getNode("/airports/active-ramp");
+					foreach(var rampN; ramps) {
+						var path = rampN.getNode("path").getValue();
+						if ((substr(path, -10, 4) == "ramp" and substr(path, -5, 1) == activeRamp.getValue()) or (substr(path, -11, 4) == "ramp" and substr(path, -6, 2) == activeRamp.getValue())) {
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos-temp", rampN.getNode("latitude-deg").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos-temp", rampN.getNode("longitude-deg").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos-temp", rampN.getNode("elevation-ft").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading-temp", rampN.getNode("heading-deg").getValue());
+						}
+					}
+				</script>
+			</binding>
+		</action>
+	</animation>
+
+	<animation>
+		<object-name>rect</object-name>
+		<enable-hot type="bool">false</enable-hot>
+	</animation>
+
+</PropertyList>
