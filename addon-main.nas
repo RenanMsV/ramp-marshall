@@ -177,7 +177,7 @@ var animate = func(prop, target, rate) { # Rate is in deg/sec
 	
 }
 
-var addModels = func(path, index, lat, lon, alt, hdg)
+var addModels = func(path, index, lat, lon, alt, hdg, aircraft_x)
 {
 	# Derived from jetways.nas
 
@@ -202,6 +202,8 @@ var addModels = func(path, index, lat, lon, alt, hdg)
 	model.getNode("elevation-ft-prop", 1).setValue(model_path ~ "/elevation-ft");
 	model.getNode("heading-deg", 1).setDoubleValue(hdg);
 	model.getNode("heading-deg-prop", 1).setValue(model_path ~ "/heading-deg");
+	model.getNode("aircraft-x", 1).setDoubleValue(aircraft_x);
+	model.getNode("aircraft-x-prop", 1).setValue(model_path ~ "/aircraft-x");
 	model.getNode("pitch-deg", 1).setDoubleValue(0);
 	model.getNode("pitch-deg-prop", 1).setValue(model_path ~ "/pitch-deg");
 	model.getNode("roll-deg", 1).setDoubleValue(0);
@@ -286,7 +288,7 @@ var load_ramps = func(icao)
 			print("Loaded ramp marshaller #", index);
 
 			# Add model to FlightGear
-			addModels(model_path, index, getprop(ramp_path~"latitude-deg"), getprop(ramp_path~"longitude-deg"), getprop(ramp_path~"altitude-m"), getprop(ramp_path~"heading-deg"));
+			addModels(model_path, index, getprop(ramp_path~"latitude-deg"), getprop(ramp_path~"longitude-deg"), getprop(ramp_path~"altitude-m"), getprop(ramp_path~"heading-deg"), getprop(ramp_path~"aircraft-x"));
 		}
 	}
 };

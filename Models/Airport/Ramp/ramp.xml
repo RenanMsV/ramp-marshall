@@ -105,6 +105,7 @@
 					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos", 0);
 					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos", 0);
 					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos", 0);
 					var ramps = props.globals.getNode("/models", 1).getChildren("model");
 					var activeRamp = props.globals.getNode("/airports/active-ramp");
 					foreach(var rampN; ramps) {
@@ -114,6 +115,7 @@
 							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos-temp", rampN.getNode("longitude-deg").getValue());
 							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos-temp", rampN.getNode("elevation-ft").getValue());
 							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading-temp", rampN.getNode("heading-deg").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos-temp", rampN.getNode("aircraft-x").getValue());
 						}
 					}
 				</script>

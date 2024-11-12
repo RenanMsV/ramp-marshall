@@ -35,11 +35,8 @@
 				if (__kbd.shift.getBoolValue()) {
 					var rampPos = geo.click_position();
 					if (__kbd.ctrl.getBoolValue()) {
-						#var name = getprop("/sim/time/utc/day-seconds");
-						var posparams = split(".", sprintf("%.16f", rampPos.lat()));
 						var hdg = getprop("/orientation/heading-deg")-180;
-						var model = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/path") ~ "/Models/Airport/Ramp/ramp.xml";
-						save_marshall_pos(rampPos, hdg)
+						save_marshall_pos(rampPos, hdg, 0)
 					}
 				}
 			});
@@ -52,9 +49,10 @@
 				setprop("/"~icao.getValue()~"/ramp["~index~"]/longitude-deg", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/longitude-deg"));
 				setprop("/"~icao.getValue()~"/ramp["~index~"]/altitude-m", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/altitude-m"));
 				setprop("/"~icao.getValue()~"/ramp["~index~"]/heading-deg", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/heading-deg"));
+				setprop("/"~icao.getValue()~"/ramp["~index~"]/aircraft-x", getprop("airports/"~icao.getValue()~"/ramps/ramp["~index~"]/aircraft-x"));
 			}
 
-			var save_marshall_pos = func(rampPos, hdg)
+			var save_marshall_pos = func(rampPos, hdg, aircraftX)
 			{
 				var icao = props.globals.getNode("/sim/airport/closest-airport-id");
 				if (icao.getValue() == nil or icao.getValue() == "") {
@@ -77,6 +75,7 @@
 				setprop(icao.getValue() ~ "/ramp["~i~"]/longitude-deg", rampPos.lon());
 				setprop(icao.getValue() ~ "/ramp["~i~"]/altitude-m", rampPos.alt());
 				setprop(icao.getValue() ~ "/ramp["~i~"]/heading-deg", hdg);
+				setprop(icao.getValue() ~ "/ramp["~i~"]/aircraft-x", aircraftX);
 
 				io.write_properties(filename, icao.getValue());
 				print("New RampMarshall location saved");
@@ -122,14 +121,16 @@
 							rampN.getNode("longitude-deg").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos"));	
 							rampN.getNode("elevation-ft").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos"));									
 							rampN.getNode("heading-deg").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading"));
+							rampN.getNode("aircraft-x").setValue(getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos-temp")+getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos"));
 							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/latitude-deg", rampN.getNode("latitude-deg").getValue());
 							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/longitude-deg", rampN.getNode("longitude-deg").getValue());
 							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/altitude-m", rampN.getNode("elevation-ft").getValue()*FT2M);
 							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/heading-deg", rampN.getNode("heading-deg").getValue());
+							setprop(icao.getValue() ~ "/ramp["~activeRamp.getValue()~"]/aircraft-x", rampN.getNode("aircraft-x").getValue());
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/latitude-deg", rampN.getNode("latitude-deg").getValue());
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/longitude-deg", rampN.getNode("longitude-deg").getValue());
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/altitude-m", rampN.getNode("elevation-ft").getValue()*FT2M);
-							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/heading-deg", rampN.getNode("heading-deg").getValue());
+							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/aircraft-x", rampN.getNode("aircraft-x").getValue());
 						}
 					}
 				},
@@ -246,10 +247,10 @@
 			<layout>vbox</layout>
 			<slider>
 				<name>marshall-x-pos</name>
-				<min>-0.0010</min>
-				<max> 0.0010</max>
-				<step> 0.00001</step>
-				<fraction>0.00001</fraction>
+				<min>-0.001</min>
+				<max> 0.001</max>
+				<step> 0.0000001</step>
+				<fraction>0.0000001</fraction>
 				<live>true</live>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos</property>
 				<binding>
@@ -259,10 +260,10 @@
 			</slider>
 			<slider>
 				<name>marshall-y-pos</name>
-				<min>-0.0010</min>
-				<max> 0.0010</max>
-				<step> 0.00001</step>
-				<fraction>0.00001</fraction>
+				<min>-0.001</min>
+				<max> 0.001</max>
+				<step> 0.000000001</step>
+				<fraction>0.000000001</fraction>
 				<live>true</live>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos</property>
 				<binding>
@@ -272,10 +273,10 @@
 			</slider>
 			<slider>
 				<name>marshall-z-pos</name>
-				<min>-0.0010</min>
-				<max> 0.0010</max>
-				<step> 0.000001</step>
-				<fraction>0.000001</fraction>
+				<min>-0.5</min>
+				<max> 0.5</max>
+				<step> 0.001</step>
+				<fraction>0.001</fraction>
 				<live>true</live>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos</property>
 				<binding>
@@ -287,8 +288,8 @@
 				<name>marshall-heading</name>
 				<min>0</min>
 				<max>360</max>
-				<step>.000001</step>
-				<fraction>0</fraction>
+				<step>0.01</step>
+				<fraction>0.01</fraction>
 				<live>true</live>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading</property>
 				<binding>
@@ -303,7 +304,7 @@
 			<text>
 				<halign>left</halign>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-x-pos</property>
-				<format>%.03f</format>
+				<format>%.7f</format>
 				<live>true</live>
 				<color>
 					<red>0.9</red>
@@ -315,7 +316,7 @@
 			<text>
 				<halign>left</halign>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-y-pos</property>
-				<format>%.03f</format>
+				<format>%.7f</format>
 				<live>true</live>
 				<color>
 					<red>0.9</red>
@@ -327,7 +328,7 @@
 			<text>
 				<halign>left</halign>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-z-pos</property>
-				<format>%.03f</format>
+				<format>%.3f</format>
 				<live>true</live>
 				<color>
 					<red>0.9</red>
@@ -339,7 +340,7 @@
 			<text>
 				<halign>left</halign>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/marshall-heading</property>
-				<format>%.03f</format>
+				<format>%3.f</format>
 				<live>true</live>
 				<color>
 					<red>0.9</red>
@@ -379,8 +380,8 @@
 			<layout>vbox</layout>
 			<slider>
 				<name>aircraft-x-pos</name>
-				<min>-25.0</min>
-				<max> 25.0</max>
+				<min>-1125.0</min>
+				<max> 1125.0</max>
 				<step> 0.001</step>
 				<fraction>0.001</fraction>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos</property>
@@ -395,7 +396,7 @@
 			<text>
 				<halign>left</halign>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos</property>
-				<format>%.03f</format>
+				<format>%.3f</format>
 				<live>true</live>
 				<color>
 					<red>0.9</red>
