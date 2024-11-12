@@ -160,7 +160,15 @@
 			</text>
 			<text>
 				<halign>left</halign>
-				<label>    2) Use the sliders to fine tune the</label>
+				<label>    2) Activate the newly added Marshall with</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       a left click on the Marshall.</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>    3) Use the sliders to fine tune the</label>
 			</text>
 			<text>
 				<halign>left</halign>
@@ -168,11 +176,11 @@
 			</text>
 			<text>
 				<halign>left</halign>
-				<label>    3) Click on the "Save Current Edit" button</label>
+				<label>    4) Click on the "Save Current Edit" button</label>
 			</text>
 			<text>
 				<halign>left</halign>
-				<label>       to save the new Marshall.</label>
+				<label>       to save the new Marshall edits.</label>
 			</text>
 		</group>
 	</group>
@@ -189,7 +197,11 @@
 			</text>
 			<text>
 				<halign>left</halign>
-				<label>    1) Left click on the Marshall you want to edit.</label>
+				<label>    1) Activate the Marshall you want to edit</label>
+			</text>
+			<text>
+				<halign>left</halign>
+				<label>       with a left click.</label>
 			</text>
 			<text>
 				<halign>left</halign>
