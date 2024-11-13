@@ -177,20 +177,16 @@ var animate = func(prop, target, rate) { # Rate is in deg/sec
 	
 }
 
-var response = {
-    site: nil,
-    type: nil,  # 0 = water, 1 = road, 2 = railway, 3 = city, 4 = farmland, 5 = other land
-    code: "",
+var marshalls = {
     models: [],
 };
 
 var unload = func() {
-    var m = pop( response.models );
+    var m = pop( marshalls.models );
     while( m != nil ){
         m.remove();
-        m = pop( response.models );
+        m = pop( marshalls.models );
     }
-    setprop("/sim/smoke/enable", 0);
 }
 
 var addModels = func(path, lat, lon, alt, hdg, aircraft_x)
@@ -231,8 +227,6 @@ var addModels = func(path, lat, lon, alt, hdg, aircraft_x)
 
 var load_ramps = func(icao)
 {
-	unload();
-	
     print("Loading ramps from airport...", icao);
 
 	var xml_file =  getprop("/sim/fg-home") ~ "/Export/Addons/org.flightgear.addons.rampmarshall/AI/Airports/" ~ icao ~ "/ramps.xml";
@@ -249,9 +243,8 @@ var load_ramps = func(icao)
 	else
 	{
 		print("Loaded Ramps at " ~ icao);
-
-		var ramps = props.globals.getNode(rampsTree).getChildren();
-
+		var ramps = props.globals.getNode(rampsTree).getChildren("ramp");
+		unload();
 		foreach(var ramp; ramps)
 		{
 			# General Runtime XML
@@ -305,7 +298,7 @@ var load_ramps = func(icao)
 			print("Loaded ramp marshaller #", index);
 
 			# Add model to FlightGear
-			append(response.models, addModels(model_path, getprop(ramp_path~"latitude-deg"), getprop(ramp_path~"longitude-deg"), getprop(ramp_path~"altitude-m"), getprop(ramp_path~"heading-deg"), getprop(ramp_path~"aircraft-x")));
+			append(marshalls.models, addModels(model_path, getprop(ramp_path~"latitude-deg"), getprop(ramp_path~"longitude-deg"), getprop(ramp_path~"altitude-m"), getprop(ramp_path~"heading-deg"), getprop(ramp_path~"aircraft-x")));
 		}
 	}
 };

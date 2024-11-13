@@ -80,7 +80,7 @@
 
 				io.write_properties(filename, icao.getValue());
 				print("New RampMarshall location saved");
-				
+
 				setprop(rampsTree~"/loaded", 0); # Reset Loaded flag so flightgear loads the new ramp
 
 			};
