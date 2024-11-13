@@ -36,7 +36,8 @@
 					var rampPos = geo.click_position();
 					if (__kbd.ctrl.getBoolValue()) {
 						var hdg = getprop("/orientation/heading-deg")-180;
-						save_marshall_pos(rampPos, hdg, 0)
+						# default aircraft-x to marshall = ramp_dist = -14
+						save_marshall_pos(rampPos, hdg, -14)
 					}
 				}
 			});
@@ -63,7 +64,7 @@
 				var filename = getprop("/sim/fg-home") ~ "/Export/Addons/org.flightgear.addons.rampmarshall/AI/Airports/" ~ icao.getValue() ~ "/ramps.xml";
 				var rampsTree = "/airports/"~icao.getValue()~"/ramps";
 
-				readFile = io.read_properties(filename, icao.getValue());
+				#readFile = io.read_properties(filename, icao.getValue());
 				var manager = props.globals.getNode("/"~icao.getValue(), 1);					
 				var i = 0;
 				for (; 1; i += 1) {
@@ -79,6 +80,7 @@
 
 				io.write_properties(filename, icao.getValue());
 				print("New RampMarshall location saved");
+				
 				setprop(rampsTree~"/loaded", 0); # Reset Loaded flag so flightgear loads the new ramp
 
 			};
@@ -94,7 +96,7 @@
 				var rampsTree = "/airports/"~icao.getValue()~"/ramps";
 				io.write_properties(filename, icao.getValue());
 				print("Edited RampMarshall location saved");
-				setprop(rampsTree~"/loaded", 0); # Reset Loaded flag so flightgear loads the new ramp
+				#setprop(rampsTree~"/loaded", 0); # Reset Loaded flag so flightgear loads the new ramp
 			};
 
 			# Main Loop
@@ -130,6 +132,7 @@
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/latitude-deg", rampN.getNode("latitude-deg").getValue());
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/longitude-deg", rampN.getNode("longitude-deg").getValue());
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/altitude-m", rampN.getNode("elevation-ft").getValue()*FT2M);
+							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/heading-deg", rampN.getNode("heading-deg").getValue());
 							setprop("/airports/"~icao.getValue() ~ "/ramps/ramp["~activeRamp.getValue()~"]/aircraft-x", rampN.getNode("aircraft-x").getValue());
 						}
 					}
@@ -392,8 +395,8 @@
 			<layout>vbox</layout>
 			<slider>
 				<name>aircraft-x-pos</name>
-				<min>-1125.0</min>
-				<max> 1125.0</max>
+				<min>-25.0</min>
+				<max> 25.0</max>
 				<step> 0.001</step>
 				<fraction>0.001</fraction>
 				<property>/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos</property>
