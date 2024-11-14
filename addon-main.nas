@@ -392,6 +392,13 @@ var main_loop =
 
 			if(getprop("/airports/enable-ramp") == 1)
 			{
+				ramp_dist = getprop("/sim/model/ramp/x-m");
+				override_ramp_dist = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/aircraft-x-pos");
+				override = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/override");
+				if(ramp_dist == nil or override)
+				{
+					ramp_dist = override_ramp_dist;
+				}
 
 				if(me.function != getprop(ramp_tree~"function"))
 				{
