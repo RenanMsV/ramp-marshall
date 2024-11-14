@@ -189,7 +189,7 @@ var unload = func() {
     }
 }
 
-var addModels = func(path, lat, lon, alt, hdg, aircraft_x)
+var addModels = func(path, lat, lon, alt, hdg)
 {
 	# Derived from jetways.nas
 
@@ -214,8 +214,6 @@ var addModels = func(path, lat, lon, alt, hdg, aircraft_x)
 	model.getNode("elevation-ft-prop", 1).setValue(model_path ~ "/elevation-ft");
 	model.getNode("heading-deg", 1).setDoubleValue(hdg);
 	model.getNode("heading-deg-prop", 1).setValue(model_path ~ "/heading-deg");
-	model.getNode("aircraft-x", 1).setDoubleValue(aircraft_x);
-	model.getNode("aircraft-x-prop", 1).setValue(model_path ~ "/aircraft-x");
 	model.getNode("pitch-deg", 1).setDoubleValue(0);
 	model.getNode("pitch-deg-prop", 1).setValue(model_path ~ "/pitch-deg");
 	model.getNode("roll-deg", 1).setDoubleValue(0);
@@ -297,8 +295,13 @@ var load_ramps = func(icao)
 
 			print("Loaded ramp marshaller #", index);
 
+			aircraft.data.add(
+				"/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/aircraft-x-pos"
+			);
+			aircraft.data.save();
+
 			# Add model to FlightGear
-			append(marshalls.models, addModels(model_path, getprop(ramp_path~"latitude-deg"), getprop(ramp_path~"longitude-deg"), getprop(ramp_path~"altitude-m"), getprop(ramp_path~"heading-deg"), getprop(ramp_path~"aircraft-x")));
+			append(marshalls.models, addModels(model_path, getprop(ramp_path~"latitude-deg"), getprop(ramp_path~"longitude-deg"), getprop(ramp_path~"altitude-m"), getprop(ramp_path~"heading-deg")));
 		}
 	}
 };
@@ -617,10 +620,10 @@ var ramp_pos = geo.Coord.new();
 var ramp_dist = getprop("/sim/model/ramp/x-m");
 if(ramp_dist == nil)
 {
-	ramp_dist = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/dialog/settings/aircraft-x-pos");
+	ramp_dist = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/aircraft-x-pos");
 }
 if (ramp_dist == nil) {
-	ramp_dist = -14;
+	ramp_dist = 17;
 }
 
 var convert_stg = func()
