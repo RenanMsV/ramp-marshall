@@ -617,13 +617,13 @@ var posData =
 
 var rampPos = [];
 var ramp_pos = geo.Coord.new();
+
 var ramp_dist = getprop("/sim/model/ramp/x-m");
-if(ramp_dist == nil)
+var override_ramp_dist = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/aircraft-x-pos");
+var override = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/override");
+if(ramp_dist == nil or override)
 {
-	ramp_dist = getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/aircraft-x-pos");
-}
-if (ramp_dist == nil) {
-	ramp_dist = 17;
+	ramp_dist = override_ramp_dist;
 }
 
 var convert_stg = func()

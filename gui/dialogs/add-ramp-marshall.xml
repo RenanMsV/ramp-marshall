@@ -385,7 +385,6 @@
 	<group>
 		<layout>hbox</layout>
 		<halign>center</halign>
-
 		<group>
 			<layout>vbox</layout>
 			<halign>right</halign>
@@ -423,10 +422,19 @@
 				</color>
 			</text>
 		</group>
-		<group>
-			<layout>vbox</layout>
-			<padding>25</padding>
-		</group>
+	</group>
+	<group>
+		<layout>hbox</layout>
+		<halign>center</halign>
+		<checkbox>
+			<halign>left</halign>
+			<label>Override Aircraft's Hard Code</label>
+			<property>/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/override</property>
+			<live>true</live>
+			<binding>
+				<command>dialog-apply</command>
+			</binding>
+		</checkbox>
 	</group>
 	<hrule />
 	<button>
