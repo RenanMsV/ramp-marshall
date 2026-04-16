@@ -91,12 +91,36 @@
 	<animation>
 		<type>pick</type>
 		<object-name>waldo</object-name>
+		<object-name>rect</object-name>
+		<object-name>rect.001</object-name>
 		<action>
 			<button>0</button>
 			<repeatable>false</repeatable>
 			<binding>
 				<command>nasal</command>
-				<script alias="../../../../params/toggle-ramp-marshall-script" />
+				<script alias="../../../../params/toggle-ramp-marshall-script"/>
+			</binding>
+			<binding>
+				<command>nasal</command>
+				<script>
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-x-pos", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-y-pos", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-z-pos", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-heading", 0);
+					setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/aircraft-x-pos", getprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/aircraft-x-pos"));
+
+					var activeRamp = props.globals.getNode("/airports/active-ramp");
+					var ramps = props.globals.getNode("/models", 1).getChildren("model");
+					foreach(var rampN; ramps) {
+						var path = rampN.getNode("path").getValue();
+						if ((substr(path, -10, 4) == "ramp" and substr(path, -5, 1) == activeRamp.getValue()) or (substr(path, -11, 4) == "ramp" and substr(path, -6, 2) == activeRamp.getValue())) {
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-x-pos-temp", rampN.getNode("latitude-deg").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-y-pos-temp", rampN.getNode("longitude-deg").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-z-pos-temp", rampN.getNode("elevation-ft").getValue());
+							setprop("/addons/by-id/org.flightgear.addons.rampmarshall/addon-devel/dialog/settings/marshall-heading-temp", rampN.getNode("heading-deg").getValue());
+						}
+					}
+				</script>
 			</binding>
 		</action>
 	</animation>

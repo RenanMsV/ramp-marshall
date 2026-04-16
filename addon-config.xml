@@ -28,11 +28,25 @@ along with FlightGear.  If not, see <http://www.gnu.org/licenses/>.
 <PropertyList>
     <addons>
         <by-id>
-            <com.github.renanmsv.rampmarshall>
+            <org.flightgear.addons.rampmarshall>
                 <addon-devel>
-                    <enable type="bool">0</enable>
+                    <enable type="bool">1</enable>
+					<aircraft-x-pos type="double">17</aircraft-x-pos>
+					<override type="bool">false</override>
+					<dialog>
+						<settings>
+							<marshall-x-pos type="double">0.0</marshall-x-pos>
+							<marshall-y-pos type="double">0.0</marshall-y-pos>
+							<marshall-z-pos type="double">0.0</marshall-z-pos>
+							<marshall-heading type="double">0.0</marshall-heading>
+							<marshall-x-pos-temp type="double">0.0</marshall-x-pos-temp>
+							<marshall-y-pos-temp type="double">0.0</marshall-y-pos-temp>
+							<marshall-z-pos-temp type="double">0.0</marshall-z-pos-temp>
+							<marshall-heading-temp type="double">0.0</marshall-heading-temp>
+						</settings>
+					</dialog>
                 </addon-devel>
-            </com.github.renanmsv.rampmarshall>
+            </org.flightgear.addons.rampmarshall>
         </by-id>
     </addons>
 </PropertyList>

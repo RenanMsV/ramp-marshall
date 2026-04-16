@@ -15,30 +15,13 @@
         <menu>
             <label>Ramp Marshall</label>
             <enabled type="bool">true</enabled>
-
             <item>
-                <label>Open Config...</label>
+                <label>Add or Edit Ramp Marshall</label>
                 <binding>
                     <command>dialog-show</command>
-                    <dialog-name>ramp-marshall-dialog</dialog-name>
+                    <dialog-name>add-ramp-marshall</dialog-name>
                 </binding>
             </item>
-            
-            <!-- 
-            FOR DEVELOPMENT ONLY!
-            trigger reload of addon-main.nas 
-            1) This item should be REMOVED for release versions.
-            2) Ensure the label is unique
-            3) replace addon ID in <property> to match your addon
-            -->
-            <!--item>
-                <label>Reload</label>
-                <binding>
-                    <command>property-toggle</command>
-                    <property>/addons/by-id/com.renanmsv.github.rampmarshall/reload</property>
-                </binding>
-            </item--> 
-            
         </menu>
     </menubar-items>
 </PropertyList>

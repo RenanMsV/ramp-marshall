@@ -7,7 +7,7 @@
   </meta>
 
   <addon>
-    <identifier type="string">com.github.renanmsv.rampmarshall</identifier>
+    <identifier type="string">org.flightgear.addons.rampmarshall</identifier>
     <name type="string">Ramp Marshall</name>
     <version type="string">0.0.1</version>
 
@@ -24,6 +24,11 @@
       </author>
       <author>
         <name type="string">RenanMsV</name>
+        <email type="string"></email>
+        <url type="string"></url>
+      </author>
+	  <author>
+        <name type="string">wlbragg</name>
         <email type="string"></email>
         <url type="string"></url>
       </author>
